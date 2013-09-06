@@ -17,3 +17,12 @@ The need for this became apparent to my team during a
 Hackathon; [our project](http://github.com/jholtom/webvirt)
 required a VNC client for connecting to VMs, but no
 in-browser software we found truly fit our needs.
+
+Requirements
+------------
+
+Serverside:
+* [tornado](http://github.com/facebook/tornado)
+
+Clientside:
+* A web browser that supports Canvas and Websockets
