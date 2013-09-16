@@ -1,0 +1,8 @@
+[core]
+siteroot = /var/globalvnc/
+title = GlobalVNC
+port = 80
+[websockets]
+site = globalvnc.tjhsst.edu
+port = 80
+url = /ws
