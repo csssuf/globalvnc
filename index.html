@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<title>{{ config['core']['title'] }}</title>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+	</head>
+	<body>
+		<div class="jumbotron">
+			<div class="container">
+				<h1>Test page</h1>
+			</div>
+		</div>
+		<script>
+			var ws = new WebSocket({{ "'ws://" + config['websockets']['site'] + ':' + config['websockets']['port'] + config['websockets']['url'] + "'" }});
+			ws.onopen = function() {
+				console.log("Websocket opened.");
+			};
+			ws.onmessage = function(ev) {
+				console.log("Message received: " + ev.data);
+			};
+			ws.onclose = function(ev) {
+				console.log("Websocket closed: " + ev.data);
+			};
+			ws.onerror = function(ev) {
+				console.log("Error received:   " + ev.data);
+			};
+		</script>
+	</body>
+</html>
