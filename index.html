@@ -11,6 +11,7 @@
 				<h1>Test page</h1>
 			</div>
 		</div>
+		<canvas id="vnc" width="1024" height="768">Your web browser does not support HTML5 Canvas. Please upgrade to a more modern web browser.</canvas>
 		<script>
 			var ws = new WebSocket({{ "'ws://" + config['websockets']['site'] + ':' + config['websockets']['port'] + config['websockets']['url'] + "'" }});
 			ws.onopen = function() {
@@ -25,6 +26,26 @@
 			ws.onerror = function(ev) {
 				console.log("Error received:   " + ev.data);
 			};
+			$('#vnc').mousemove(function(event) {
+				var msg = "mouse_move " + event.pageX + ' ' + event.pageY;
+				ws.send(msg);
+			});
+			$('#vnc').mousedown(function(event) {
+				var msg = "mouse_down " + event.pageX + " " + event.pageY;
+				ws.send(msg);
+			});
+			$('#vnc').mouseup(function(event) {
+				var msg = "mouse_up " + event.pageX + " " + event.pageY;
+				ws.send(msg);
+			});
+			$('#vnc').keydown(function(event) {
+				var msg = "key_down " + event.charCode;
+				ws.send(msg);
+			});
+			#('#vnc').keyup(function(event) {
+				var msg = "key_up " + event.charCode;
+				ws.send(msg);
+			});
 		</script>
 	</body>
 </html>
