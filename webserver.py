@@ -26,6 +26,7 @@ class SocketHandler(websocket.WebSocketHandler):
     def open(self):
         self.set_nodelay(True)
         self.state = 0
+        self.serverinfo = {}
 
     def on_close(self):
         print('lost client')
@@ -34,7 +35,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.write_message('RECEIVED: ' + message)
         splitmsg = message.split(' ')
         if self.state == 0 and message.split(' ')[0][:6] == 'config':
-            check_config(message)
+            write_config(message)
         elif self.state == 2:
             if splitmsg[0] == 'mouse_move':
                 do_move(msg[1:])
@@ -46,8 +47,19 @@ class SocketHandler(websocket.WebSocketHandler):
     def select_subprotocol(self, subprotocols):
         pass
 
-    def check_config(msg):
-        pass
+    def write_config(msg):
+        msg = msg[6:].split(' ')
+        if msg[0] == 'server':
+            self.serverinfo['server'] = msg[1]
+        elif msg[0] == 'port':
+            self.serverinfo['port'] = msg[1]
+        elif msg[0] == 'pw':
+            self.serverinfo['password'] = msg[1]
+        check_config()
+
+    def check_config():
+        if 'server' in self.serverinfo.keys():
+            self.vncc = VNCConnection(self.serverinfo)
 
     def do_move(msgarr):
         pass
@@ -57,6 +69,11 @@ class SocketHandler(websocket.WebSocketHandler):
 
     def do_key(keystate, msgarr):
         pass
+
+class VNCConnection():
+    def __init__(self, serverinfo):
+        pass
+
 
 if __name__ == '__main__':
     main()
