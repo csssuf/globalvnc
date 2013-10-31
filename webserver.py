@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from tornado import web, ioloop, websocket
 import configparser
+import base64
 
 cfgarr = None
 
@@ -23,16 +24,20 @@ class SocketHandler(websocket.WebSocketHandler):
     # 0 = no data received, not even VNC server data
     # 1 = vnc server data received, opening connection
     # 2 = vnc connection established
+    
     def open(self):
         self.set_nodelay(True)
         self.state = 0
         self.serverinfo = {}
+        f = open('test.png', 'rb').read()
+        f64 = base64.b64encode(f)
+        self.write_message(f64)
 
     def on_close(self):
         print('lost client')
 
     def on_message(self, message):
-        self.write_message('RECEIVED: ' + message)
+        #self.write_message('RECEIVED: ' + message)
         splitmsg = message.split(' ')
         if self.state == 0 and message.split(' ')[0][:6] == 'config':
             write_config(message)
