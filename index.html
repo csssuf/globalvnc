@@ -4,6 +4,13 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
 		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+		<style>
+			#vnc {
+				//text-align: center;
+				padding-left: 25%;
+				padding-right: 25%;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="jumbotron">
@@ -11,7 +18,7 @@
 				<h1>Test page</h1>
 			</div>
 		</div>
-		<canvas id="vnc" width="1024" height="768">Your web browser does not support HTML5 Canvas. Please upgrade to a more modern web browser.</canvas>
+		<canvas class="cvs" id="vnc" width="1024" height="768">Your web browser does not support HTML5 Canvas. Please upgrade to a more modern web browser.</canvas>
 		<script>
 			// global variables
 			var ws = new WebSocket({{ "'ws://" + config['websockets']['site'] + ':' + config['websockets']['port'] + config['websockets']['url'] + "'" }});

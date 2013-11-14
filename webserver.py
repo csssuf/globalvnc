@@ -2,6 +2,8 @@
 from tornado import web, ioloop, websocket
 import configparser
 import base64
+import signal
+import sys
 
 cfgarr = None
 
@@ -80,5 +82,10 @@ class VNCConnection():
         pass
 
 
+def ex(thing1, thing2):
+    print('Exiting due to Ctrl-C.')
+    sys.exit()
+
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, ex)
     main()
