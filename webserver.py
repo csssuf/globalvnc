@@ -32,14 +32,13 @@ class SocketHandler(websocket.WebSocketHandler):
             self.vncc = VNCConnection(self.serverinfo)
 
     def write_config(self, msg):
-        msg = msg[6:].split(' ')
+        msg = msg[7:].split(' ')
         if msg[0] == 'server':
             self.serverinfo['server'] = msg[1]
         elif msg[0] == 'port':
             self.serverinfo['port'] = msg[1]
         elif msg[0] == 'pw':
             self.serverinfo['password'] = msg[1]
-        print(self.serverinfo)
         self.check_config()
 
     def open(self):
