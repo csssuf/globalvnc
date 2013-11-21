@@ -27,6 +27,21 @@ class SocketHandler(websocket.WebSocketHandler):
     # 1 = vnc server data received, opening connection
     # 2 = vnc connection established
     
+    def check_config(self):
+        if 'server' in self.serverinfo.keys():
+            self.vncc = VNCConnection(self.serverinfo)
+
+    def write_config(self, msg):
+        msg = msg[6:].split(' ')
+        if msg[0] == 'server':
+            self.serverinfo['server'] = msg[1]
+        elif msg[0] == 'port':
+            self.serverinfo['port'] = msg[1]
+        elif msg[0] == 'pw':
+            self.serverinfo['password'] = msg[1]
+        print(self.serverinfo)
+        self.check_config()
+
     def open(self):
         self.set_nodelay(True)
         self.state = 0
@@ -42,7 +57,7 @@ class SocketHandler(websocket.WebSocketHandler):
         #self.write_message('RECEIVED: ' + message)
         splitmsg = message.split(' ')
         if self.state == 0 and message.split(' ')[0][:6] == 'config':
-            write_config(message)
+            self.write_config(message)
         elif self.state == 2:
             if splitmsg[0] == 'mouse_move':
                 do_move(msg[1:])
@@ -53,20 +68,6 @@ class SocketHandler(websocket.WebSocketHandler):
 
     def select_subprotocol(self, subprotocols):
         pass
-
-    def write_config(msg):
-        msg = msg[6:].split(' ')
-        if msg[0] == 'server':
-            self.serverinfo['server'] = msg[1]
-        elif msg[0] == 'port':
-            self.serverinfo['port'] = msg[1]
-        elif msg[0] == 'pw':
-            self.serverinfo['password'] = msg[1]
-        check_config()
-
-    def check_config():
-        if 'server' in self.serverinfo.keys():
-            self.vncc = VNCConnection(self.serverinfo)
 
     def do_move(msgarr):
         pass

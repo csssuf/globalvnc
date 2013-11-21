@@ -6,7 +6,6 @@
 		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 		<style>
 			#vnc {
-				//text-align: center;
 				padding-left: 25%;
 				padding-right: 25%;
 			}
@@ -18,17 +17,42 @@
 				<h1>Test page</h1>
 			</div>
 		</div>
-		<canvas class="cvs" id="vnc" width="1024" height="768">Your web browser does not support HTML5 Canvas. Please upgrade to a more modern web browser.</canvas>
+		<canvas class="cvs" id="vnc" width="1920" height="1080">Your web browser does not support HTML5 Canvas. Please upgrade to a more modern web browser.</canvas>
+		<div class="modal fade" id="configmodal" tabindex="-1" role="dialog" aria-labelledby="configmodalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="configmodalLabel">Enter configuration</h4>
+					</div>
+					<div class="modal-body">
+						<form id="configform">
+							<label for="server">Server Address:</label>
+							<input type="text" id="server" name="server" placeholder="example.com">
+							<label for="port">Port:</label>
+							<input type="text" id="port" name="port" placeholder="5900">
+							<label for="password">Password:</label>
+							<input type="password" id="password" name="password">
+							<button class="btn btn-default" value="submit">Submit and connect</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
 		<script>
 			// global variables
 			var ws = new WebSocket({{ "'ws://" + config['websockets']['site'] + ':' + config['websockets']['port'] + config['websockets']['url'] + "'" }});
 			var cv = document.getElementById('vnc');
 			var ct = cv.getContext('2d');
 
-			
+			function togglemodal() {
+				$('#configmodal').modal('toggle');
+			}
+
 			// Websocket handler functions
 			ws.onopen = function() {
 				console.log("Websocket opened.");
+				setTimeout(togglemodal, 500);
 				//ws.binaryType = "arraybuffer";
 			};
 
@@ -74,9 +98,22 @@
 				ws.send(msg);
 			});
 
-			
+			// Form bind
+
+			$('#configform').submit(function(event) {
+				if($('#server').val() != '') {
+					ws.send('config server ' + $('#server').val());
+				}
+				if($('#port').val() != '') {
+					ws.send('config port ' + $('#port').val());
+				}
+				if($('#password').val() != '') {
+					ws.send('config pw ' + $('#password').val());
+				}
+				event.preventDefault();
+			});
 			// Debugging code
-			console.log(ws.binaryType);
+			//console.log(ws.binaryType);
 		</script>
 	</body>
 </html>
