@@ -23,6 +23,8 @@ Requirements
 
 Serverside:
 * [tornado](http://github.com/facebook/tornado)
+* [vncdotool](http://github.com/sibson/vncdotool)
+* python-2.7 (due to vncdotool's twisted dependency)
 
 Clientside:
 * A web browser that supports Canvas and Websockets

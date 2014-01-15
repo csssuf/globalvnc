@@ -1,25 +1,27 @@
 #!/usr/bin/env python3
 from tornado import web, ioloop, websocket
-import configparser
+import ConfigParser
 import base64
 import signal
 import sys
 
-cfgarr = None
+ncfg = None
 
 def main():
-    global cfgarr
-    cfgarr = configparser.ConfigParser()
+    global ncfg
+    cfgarr = ConfigParser.ConfigParser()
     cfgarr.read('globalvnc.cfg')
+    ncfg = process_cfg(cfgarr)
     app = web.Application([(r'/', IndexHandler),
                             (r'/ws', SocketHandler)
                             ])
-    app.listen(cfgarr['core']['port'])
+    app.listen(ncfg['core']['port'])
     ioloop.IOLoop.instance().start()
 
 class IndexHandler(web.RequestHandler):
     def get(self):
-        self.render("templates/index.html", config=cfgarr)
+        self.render("templates/index.html", config=ncfg)
+
 
 class SocketHandler(websocket.WebSocketHandler):
     # State indicates the client's progress in opening a connection.
@@ -29,7 +31,9 @@ class SocketHandler(websocket.WebSocketHandler):
     
     def check_config(self):
         if 'server' in self.serverinfo.keys():
-            self.vncc = VNCConnection(self.serverinfo)
+            # actual vnc connection goes here
+            pass
+
 
     def write_config(self, msg):
         msg = msg[7:].split(' ')
@@ -77,14 +81,18 @@ class SocketHandler(websocket.WebSocketHandler):
     def do_key(keystate, msgarr):
         pass
 
-class VNCConnection():
-    def __init__(self, serverinfo):
-        pass
-
 
 def ex(thing1, thing2):
     print('Exiting due to Ctrl-C.')
     sys.exit()
+
+def process_cfg(c):
+    narr = {}
+    for i in c.sections():
+        narr[i] = {}
+        for j in c.items(i):
+            narr[i][j[0]] = j[1]
+    return narr
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, ex)
