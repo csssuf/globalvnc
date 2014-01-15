@@ -19,7 +19,7 @@ def main():
 
 class IndexHandler(web.RequestHandler):
     def get(self):
-        self.render("index.html", config=cfgarr)
+        self.render("templates/index.html", config=cfgarr)
 
 class SocketHandler(websocket.WebSocketHandler):
     # State indicates the client's progress in opening a connection.
@@ -45,7 +45,7 @@ class SocketHandler(websocket.WebSocketHandler):
         self.set_nodelay(True)
         self.state = 0
         self.serverinfo = {}
-        f = open('test.png', 'rb').read()
+        f = open('data/test2.png', 'rb').read()
         f64 = base64.b64encode(f)
         self.write_message(f64)
 
