@@ -1,9 +1,12 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 from tornado import web, ioloop, websocket
 import ConfigParser
 import base64
 import signal
 import sys
+from vncdotool import api
+import time
+import os
 
 ncfg = None
 
@@ -24,16 +27,35 @@ class IndexHandler(web.RequestHandler):
 
 
 class SocketHandler(websocket.WebSocketHandler):
-    # State indicates the client's progress in opening a connection.
-    # 0 = no data received, not even VNC server data
-    # 1 = vnc server data received, opening connection
-    # 2 = vnc connection established
+    def write_img(self, fn):
+        f = open(fn, 'rb').read()
+        f64 = base64.b64encode(f)
+        self.write_message(f64)
     
+    def do_move(self, msgarr):
+        self.client.mouseMove(int(msgarr[0]), int(msgarr[1]))
+
+    def do_mouse(self, mstate, msgarr):
+        self.client.mouseMove(int(msgarr[0]), int(msgarr[1]))
+        if mstate:
+            self.client.mouseDown(1)
+        else:
+            self.client.mouseUp(1)
+
+    def do_key(self, keystate, msgarr):
+        if keystate:
+            self.client.keyDown(msgarr)
+        else:
+            self.client.keyUp(msgarr)
+
     def check_config(self):
         if 'server' in self.serverinfo.keys():
-            # actual vnc connection goes here
-            pass
-
+            self.client = api.connect(self.serverinfo['server'] + ':0')
+            self.state = True
+            filename = 'gvnc-tmp-' + str(time.time()) + '.png'
+            self.client.captureScreen(filename)
+            self.write_img(filename)
+            #os.remove(filename)
 
     def write_config(self, msg):
         msg = msg[7:].split(' ')
@@ -47,11 +69,9 @@ class SocketHandler(websocket.WebSocketHandler):
 
     def open(self):
         self.set_nodelay(True)
-        self.state = 0
+        self.state = False
         self.serverinfo = {}
-        f = open('data/test2.png', 'rb').read()
-        f64 = base64.b64encode(f)
-        self.write_message(f64)
+        self.write_img('data/test2.png')
 
     def on_close(self):
         print('lost client')
@@ -59,28 +79,18 @@ class SocketHandler(websocket.WebSocketHandler):
     def on_message(self, message):
         #self.write_message('RECEIVED: ' + message)
         splitmsg = message.split(' ')
-        if self.state == 0 and message.split(' ')[0][:6] == 'config':
+        if not self.state and message.split(' ')[0][:6] == 'config':
             self.write_config(message)
-        elif self.state == 2:
+        elif self.state:
             if splitmsg[0] == 'mouse_move':
-                do_move(msg[1:])
+                self.do_move(splitmsg[1:])
             elif splitmsg[0] == 'mouse_down' or splitmsg[0] == 'mouse_up':
-                do_mouse((splitmsg[0] == 'mouse_down'), msg[1:])
+                self.do_mouse((splitmsg[0] == 'mouse_down'), splitmsg[1:])
             elif splitmsg[0] == 'key_down' or splitmsg[0] == 'key_up':
-                do_key((splitmsg[0] == 'key_down'), msg[1])
+                self.do_key((splitmsg[0] == 'key_down'), splitmsg[1])
 
     def select_subprotocol(self, subprotocols):
         pass
-
-    def do_move(msgarr):
-        pass
-
-    def do_mouse(mstate, msgarr):
-        pass
-
-    def do_key(keystate, msgarr):
-        pass
-
 
 def ex(thing1, thing2):
     print('Exiting due to Ctrl-C.')
