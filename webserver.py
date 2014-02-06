@@ -43,6 +43,7 @@ class SocketHandler(websocket.WebSocketHandler):
             self.client.mouseUp(1)
 
     def do_key(self, keystate, msgarr):
+        print(msgarr)
         if keystate:
             self.client.keyDown(msgarr)
         else:
@@ -55,7 +56,7 @@ class SocketHandler(websocket.WebSocketHandler):
             filename = 'gvnc-tmp-' + str(time.time()) + '.png'
             self.client.captureScreen(filename)
             self.write_img(filename)
-            #os.remove(filename)
+            os.remove(filename)
 
     def write_config(self, msg):
         msg = msg[7:].split(' ')
@@ -87,7 +88,7 @@ class SocketHandler(websocket.WebSocketHandler):
             elif splitmsg[0] == 'mouse_down' or splitmsg[0] == 'mouse_up':
                 self.do_mouse((splitmsg[0] == 'mouse_down'), splitmsg[1:])
             elif splitmsg[0] == 'key_down' or splitmsg[0] == 'key_up':
-                self.do_key((splitmsg[0] == 'key_down'), splitmsg[1])
+                self.do_key((splitmsg[0] == 'key_down'), int(splitmsg[1]))
 
     def select_subprotocol(self, subprotocols):
         pass

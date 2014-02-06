@@ -6,18 +6,18 @@
 		<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 		<style>
 			#vnc {
-				padding-left: 25%;
-				padding-right: 25%;
+				padding-left: 2px;
+				padding-right: 2px;
 			}
 		</style>
 	</head>
 	<body>
 		<div class="jumbotron">
 			<div class="container">
-				<h1>Test page</h1>
+				<h1>GlobalVNC</h1>
 			</div>
 		</div>
-		<canvas class="cvs" id="vnc" width="1920" height="1080">Your web browser does not support HTML5 Canvas. Please upgrade to a more modern web browser.</canvas>
+		<canvas tabindex="1" class="cvs" id="vnc" width="1920" height="1080">Your web browser does not support HTML5 Canvas. Please upgrade to a more modern web browser.</canvas>
 		<div class="modal fade" id="configmodal" tabindex="-1" role="dialog" aria-labelledby="configmodalLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -89,12 +89,14 @@
 			});
 
 			$('#vnc').keydown(function(event) {
-				var msg = "key_down " + event.charCode;
+				console.log('sending' + event.keyCode);
+				var msg = "key_down " + event.keyCode;
 				ws.send(msg);
 			});
 
 			$('#vnc').keyup(function(event) {
-				var msg = "key_up " + event.charCode;
+				console.log('unsending' + event.keyCode);
+				var msg = "key_up " + event.keyCode;
 				ws.send(msg);
 			});
 
